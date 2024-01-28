@@ -1,8 +1,7 @@
-# RoboChatter
+# iChatGPT
 
-This is a Python chatbot: you drag and drop your PDF and it will create a Chatbot with them !
+This is a Python [Flask](https://flask.palletsprojects.com/en/3.0.x/)-based chatbot that uses the OpenAI APIs to chat and send/retrieve messages. 
+This chatbot is faster than ChatGPT and, if you have OpenAI APIs running, you must only insert your private API Key inside the Python file named **__openaikeys__.py** contained inside app/models folder.
 
-Before runnning all the code do the following:
+It's a *Flask based application* so running the **app.py** file will make the code give you back the following interface:
 
-1. It need to install **rust compiler** in your environment, you can use the command (needed to run tranformers third version): curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-2. 
