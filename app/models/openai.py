@@ -2,7 +2,7 @@ import os
 import openai
 import numpy as np
 from transformers import AutoTokenizer, AutoModelForMaskedLM
-from RoboChatter.app.models.openaikeys import openai_main_key
+from models.openaikeys import openai_main_key
 
 
 ##################################################################
