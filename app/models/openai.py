@@ -1,27 +1,29 @@
 import os
 import openai
 import numpy as np
+from openai import OpenAI
 from transformers import AutoTokenizer, AutoModelForMaskedLM
 from models.openaikeys import openai_main_key
 
 
 ##################################################################
-openai_key     = openai_main_key
-openai.api_key = openai_key
+client = OpenAI(api_key = openai_main_key)
 ##################################################################
 
 
-def ask_gpt(text:str=''):
+def ask_gpt(user_query:str=''):
 
-    if text == '':
+    if user_query == '':
         raise Exception('You must pass a text to be requested to OpenAI !')
 
-    response = openai.Completion.create(
-        engine     = "text-davinci-002",
-        prompt     = text,
-        max_tokens = 2048
+    completion = client.completions.create(
+        model       ="gpt-3.5-turbo-instruct",
+        prompt      = user_query,
+        max_tokens  = 2048,
+        temperature = 0.8
     )
-    return response.choices[0].text.strip().replace('\n', ' ')
+
+    return completion.choices[0].text.strip().replace('\n', ' ')
 
 
 def get_embeddings_openai(text_to_embed, model="text-embedding-ada-002"):

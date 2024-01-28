@@ -1,10 +1,7 @@
 import os
-import faiss
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from transformers import BertTokenizer, BertModel
-from models.datascraper import read_all_pdf_in_path
 from models.openai import get_embeddings_openai
 
 
@@ -196,36 +193,6 @@ def get_pdf_dataframe_embeddings(all_pdf_in_path:pd.DataFrame=None, path_to_embe
     all_pdf_in_path['PageEmbeddings'] = [list(x) for x in normalized_page_embeddings]
 
     return all_pdf_in_path, normalized_page_embeddings
-
-
-
-# final, npe = get_pdf_dataframe_embeddings(all_pdf_in_path = None,
-#                                           path_to_embed   = os.getcwd() + '/RoboChatter/pdfs/',
-#                                           use_openai      = True)
-
-
-# p, cs = search_a_query_in_docs_with_faiss(normalized_page_embeddings   = npe,
-#                                           dataframe_pdfs               = final,
-#                                           use_openai                   = True,
-#                                           print_output                 = True,
-#                                           k_closest                    = 1,
-#                                           query                        = 'what is machine learning actually about ? Be clear.' )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
