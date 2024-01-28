@@ -5,10 +5,6 @@ from models.openai import get_embeddings_openai, ask_gpt
 from models.servicefactory import *
 
 
-def getResponse():
-    return 'Hello there !'
-
-
 def get_chatbot_response(user_request):
 
     user_request_embedded = get_embeddings_openai(text_to_embed = user_request)
@@ -31,7 +27,7 @@ def index():
 def get_response():
 
     userText = request.args.get('msg')
-    
+
     ######################################################
     bot_answer = get_chatbot_response(userText)
     bot_answer = bot_answer.replace('.', '.\n')
