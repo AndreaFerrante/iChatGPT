@@ -4,11 +4,7 @@ Flask==2.2.2
 Flask_Cors==4.0.0
 Flask_Dropzone==1.6.0
 numpy==1.25.2
-numpy==1.24.4
-numpy==1.24.3
 pandas==2.0.3
 PyPDF2==3.0.1
 tqdm==4.66.1
-tqdm==4.65.0
-transformers==4.32.1
 transformers==4.34.0

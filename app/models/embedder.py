@@ -23,7 +23,7 @@ def __vector_direction(vector) -> float:
     return np.arccos(dot_product / (magnitude_vector * magnitude_ref_vector))
 
 
-def __cosine_similarity(vec_1:np.array, vec_2:np.array):
+def __cosine_similarity(vec_1:np.array, vec_2:np.array) -> float:
 
     '''
     This function performs cosine similarity in numpy.
@@ -36,7 +36,7 @@ def __cosine_similarity(vec_1:np.array, vec_2:np.array):
     den  = np.dot(vec_1,vec_2)
     norm = np.linalg.norm(vec_1) * np.linalg.norm(vec_2)
 
-    return den / norm
+    return float(den / norm)
 
 
 def __normalize_vectors(vectors):
