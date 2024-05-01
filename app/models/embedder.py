@@ -1,8 +1,16 @@
 import os
+import faiss
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from app.models.openaiassistant import get_embeddings_openai
+from .openaikeys import openai_key 
+from .openaiassistant import OpenAIAssistant
+from transformers import BertTokenizer, BertModel, RobertaTokenizer, RobertaModel
+
+
+############################################################
+openAIAssistant = OpenAIAssistant(openai_api_key=openai_key)
+############################################################
 
 
 def __vector_direction(vector) -> float:
@@ -95,15 +103,19 @@ def __get_embeddings_using_bert(text:str):
     return outputs.last_hidden_state.mean(dim=1).detach().numpy()
 
 
-def __initialize_bert_roberta(data_model_path):
+def __initialize_bert_roberta(roberta_model:str="roberta-base"):
 
-    tokenizer = AutoTokenizer.from_pretrained(os.getcwd() + data_model_path)
-    model     = AutoModelForMaskedLM.from_pretrained(os.getcwd() + data_model_path)
+    tokenizer = RobertaTokenizer.from_pretrained(roberta_model)
+    model     = RobertaModel.from_pretrained(roberta_model)
 
     return tokenizer, model
 
 
-def __get_embeddings_using_xml_roberta(model, tokenizer, text, return_reshaped):
+def __get_embeddings_using_xml_roberta(text:str, return_reshaped:bool=False):
+
+    ##############################################
+    tokenizer, model = __initialize_bert_roberta()
+    ##############################################
 
     encoded_input = tokenizer(str(text).lower(), return_tensors='pt')
     output        = model(**encoded_input)
@@ -118,10 +130,11 @@ def __get_embeddings_using_xml_roberta(model, tokenizer, text, return_reshaped):
 
 def search_a_query_in_docs_with_faiss(normalized_page_embeddings = None,
                                       dataframe_pdfs             = None,
-                                      use_openai                 = True,
-                                      print_output               = True,
-                                      query                      = '',
-                                      k_closest                  = 1):
+                                      use_openai:bool            = True,
+                                      use_bert:bool              = False,
+                                      print_output:bool          = True,
+                                      query:str                  = "",
+                                      k_closest:int              = 1):
 
     if query == '':
         raise Exception('Pass a query to embed and search')
@@ -138,10 +151,13 @@ def search_a_query_in_docs_with_faiss(normalized_page_embeddings = None,
 
     # 2. Embed the query
     if use_openai:
-        query_embedding            = np.array(get_embeddings_openai(query)).squeeze()
+        query_embedding            = np.array(openAIAssistant.get_embeddings_from_openai(text_to_embed=query)).squeeze()
+        normalized_query_embedding = __normalize_vectors(np.array([query_embedding]))
+    elif use_bert:
+        query_embedding            = np.array(__get_embeddings_using_bert(query)).squeeze()
         normalized_query_embedding = __normalize_vectors(np.array([query_embedding]))
     else:
-        query_embedding            = np.array(__get_embeddings_using_bert(query)).squeeze()
+        query_embedding            = np.array(__get_embeddings_using_xml_roberta(query)).squeeze()
         normalized_query_embedding = __normalize_vectors(np.array([query_embedding]))
 
     ####################################################################################################################
@@ -193,7 +209,6 @@ def get_pdf_dataframe_embeddings(all_pdf_in_path:pd.DataFrame=None, path_to_embe
     all_pdf_in_path['PageEmbeddings'] = [list(x) for x in normalized_page_embeddings]
 
     return all_pdf_in_path, normalized_page_embeddings
-
 
 
 

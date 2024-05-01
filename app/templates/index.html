@@ -10,12 +10,14 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  
 </head>
 
 <body>
 
   <!-- partial:index.partial.html -->
   <section class="msger">
+
     <header class="msger-header">
       <div class="msger-header-title">
         <i class="fas fa-bug"></i> Chatbot <i class="fas fa-bug"></i>
@@ -28,7 +30,7 @@
 
         <div class="msg-bubble">
           <div class="msg-info">
-            <div class="msg-info-name">RoboChatter</div>
+            <div class="msg-info-name">iChatGPT</div>
           </div>
 
           <div class="msg-text">
@@ -43,10 +45,12 @@
       <input type="text" class="msger-input" id="textInput" placeholder="Enter your message...">
       <button type="submit" class="msger-send-btn">Send</button>
     </form>
+
   </section>
 
-  <!-- partial -->
+
   <script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
+
   <script>
 
     const msgerForm  = get(".msger-inputarea");
@@ -96,11 +100,10 @@
 
       // Bot Response
       $.get("/get", { msg: rawText }).done(function (data) {
-        console.log(rawText);
-        console.log(data);
+        //console.log(rawText);
+        //console.log(data);
         const msgText = data;
         appendMessage(BOT_NAME, BOT_IMG, "left", msgText);
-
       });
 
     }

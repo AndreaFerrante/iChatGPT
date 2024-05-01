@@ -1,10 +1,8 @@
-annoy==1.17.3
 faiss_cpu==1.7.4
-Flask==2.2.2
+Flask==2.2.5
 Flask_Cors==4.0.0
-Flask_Dropzone==1.6.0
-numpy==1.25.2
-pandas==2.0.3
-PyPDF2==3.0.1
-tqdm==4.66.1
-transformers==4.34.0
+numpy==1.26.4
+openai==1.25.0
+pandas==2.2.2
+tqdm==4.66.2
+transformers==4.37.2

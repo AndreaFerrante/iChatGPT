@@ -1,5 +1,4 @@
 from openai import OpenAI
-from openaikeys import openai_main_key
 
 
 class OpenAIAssistant(object):
@@ -24,7 +23,8 @@ class OpenAIAssistant(object):
     def __get_openai_client(self) -> None:
         self.client = OpenAI(api_key = self.openai_api_key)
 
-    def ask_gpt(self, user_query:str = "", 
+    def ask_gpt(self, 
+                user_query:str       = "", 
                 return_object:bool   = False,
                 max_tokens:str       = 2048,
                 temperature:float    = 0.85,
@@ -114,4 +114,7 @@ class OpenAIAssistant(object):
             return response
 
         return response.data[0].embedding
+
+
+
 
