@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from models.openai import get_embeddings_openai
+from app.models.openaiassistant import get_embeddings_openai
 
 
 def __vector_direction(vector) -> float:

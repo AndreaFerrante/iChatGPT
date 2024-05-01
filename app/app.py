@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from models.embedder import get_pdf_dataframe_embeddings, search_a_query_in_docs_with_faiss
-from models.openai import get_embeddings_openai, ask_gpt
+from app.models.openaiassistant import get_embeddings_openai, ask_gpt
 
 
 def get_chatbot_response(user_request):
