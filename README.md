@@ -8,8 +8,8 @@ As a reference, here OpenAI pricings and current models:
 
 >- **OpenAI Models**: [here the models](https://platform.openai.com/docs/models)
 >- **OpenAI Pricing**: [here the princing](https://openai.com/pricing)
->- **OpenAI API**: [here OpenAI API](https://platform.openai.com/docs/quickstart){target="_blank"}
+>- **OpenAI API**: [here OpenAI API](https://platform.openai.com/docs/quickstart)
 
-It's a *Flask based application* so running the **app.py** file will make the code give you back the following interface:
+Basically, it's a *Flask based application* so running the **app.py** file (point the folder in cmd and run ```python python app.py```) will show the following chat interface:
 
 ![robo_chatter](https://github.com/AndreaFerrante/iChatGPT/assets/19763070/bc8afda1-c603-4a22-a77e-885c4fab8123)
