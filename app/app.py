@@ -20,7 +20,7 @@ def index():
 def get_response():
 
     userText   = request.args.get('msg')
-    bot_answer = openAIAssistant.ask_gpt(user_query=userText)
+    bot_answer = openAIAssistant.ask_gpt(user_query=userText, model="")
 
     return bot_answer
 
