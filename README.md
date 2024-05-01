@@ -5,3 +5,4 @@ This chatbot is faster than ChatGPT and, if you have OpenAI APIs running, you mu
 
 It's a *Flask based application* so running the **app.py** file will make the code give you back the following interface:
 
+![robo_chatter](https://github.com/AndreaFerrante/iChatGPT/assets/19763070/bc8afda1-c603-4a22-a77e-885c4fab8123)
