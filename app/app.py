@@ -11,7 +11,7 @@ app             = Flask(__name__)
 ############################################################
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
 
@@ -20,7 +20,7 @@ def index():
 def get_response():
 
     userText   = request.args.get('msg')
-    bot_answer = openAIAssistant.ask_gpt(user_query=userText, model="")
+    bot_answer = openAIAssistant.ask_gpt(user_query=userText)
 
     return bot_answer
 

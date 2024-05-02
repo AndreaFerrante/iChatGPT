@@ -68,7 +68,8 @@ class OpenAIAssistant(object):
                         {"role": "user", "content": user_query}
                     ],
                     max_tokens  = max_tokens,
-                    temperature = temperature
+                    temperature = temperature,
+                    stream      = False
         )
 
         if return_object:
