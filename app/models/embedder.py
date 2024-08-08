@@ -1,16 +1,16 @@
-import os
 import faiss
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from .openaikeys import openai_key 
+from .utils import *
+from .openaikeys import openai_main_key
 from .openaiassistant import OpenAIAssistant
 from transformers import BertTokenizer, BertModel, RobertaTokenizer, RobertaModel
 
 
-############################################################
-openAIAssistant = OpenAIAssistant(openai_api_key=openai_key)
-############################################################
+#################################################################
+openAIAssistant = OpenAIAssistant(openai_api_key=openai_main_key)
+#################################################################
 
 
 def __vector_direction(vector) -> float:
@@ -186,7 +186,7 @@ def get_pdf_dataframe_embeddings(all_pdf_in_path:pd.DataFrame=None, path_to_embe
 
     #########################################################
     if all_pdf_in_path is None and path_to_embed != '':
-        all_pdf_in_path = read_all_pdf_in_path(path_to_embed)
+        all_pdf_in_path = scrape_pdf_content(path_to_embed)
     else:
         raise Exception('Pass a path to read PDFs from !')
     #########################################################

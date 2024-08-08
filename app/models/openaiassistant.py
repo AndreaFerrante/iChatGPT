@@ -1,4 +1,6 @@
 from openai import OpenAI
+from models.openaimodels import *
+from models.openaikeys import *
 
 
 class OpenAIAssistant(object):
@@ -14,7 +16,7 @@ class OpenAIAssistant(object):
 
     def __call__(self, openai_api_key:str="") -> None:
         
-        if openai_key == "":
+        if openai_main_key == "":
             raise Exception("Attention: pass to OpenAIAssistant class the OpenAI key")
         
         self.openai_api_key = openai_api_key
@@ -27,7 +29,7 @@ class OpenAIAssistant(object):
                 user_query:str       = "", 
                 return_object:bool   = False,
                 max_tokens:str       = 2048,
-                temperature:float    = 0.85,
+                temperature:float    = 0.8,
                 model:str            = "gpt-3.5-turbo-0125",
                 system_content:str   = "You are a very accurate AI assistant that answers like if its whole life depends on it."):
 
@@ -117,4 +119,7 @@ class OpenAIAssistant(object):
         return response.data[0].embedding
 
 
+
+openaiassistant = OpenAIAssistant(openai_api_key = openai_main_key)
+openaiassistant.ask_gpt(user_query='all good ?')
 
