@@ -37,6 +37,10 @@
     </main>
 
     <form class="msger-inputarea">
+      <button class="upload-button" onclick="document.getElementById('upload-input').click();">
+        <img src="./static/clippy.svg" alt="Upload PDF">
+      </button>
+      <input type="file" id="upload-input" class="upload-input" accept=".pdf" onchange="uploadFile(event)">
       <input type="text" class="msger-input" id="textInput" placeholder="Enter your message...">
       <button type="submit" class="msger-send-btn">Send</button>
     </form>
@@ -51,6 +55,7 @@
 
     const BOT_IMG     = "./static/chatbot.svg"
     const PERSON_IMG  = "./static/person.svg"
+    const CLIPPY      = "./static/clippy.png"
     const BOT_NAME    = "RoboChatter";
     const PERSON_NAME = "RoboUser";
     
@@ -66,7 +71,7 @@
     });
 
     function appendMessage(name, img, side, text) {
-      //   Simple solution for small apps
+      // Simple solution for small apps
       
       const msgHTML = `
                       <div class="msg ${side}-msg">
@@ -85,6 +90,28 @@
 
       msgerChat.insertAdjacentHTML("beforeend", msgHTML);
       msgerChat.scrollTop += 500;
+    }
+
+    function uploadFile(event) {
+        const fileInput = event.target;
+        const file = fileInput.files[0];
+
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
     }
 
     function highlightCodeBlocks(text) {
