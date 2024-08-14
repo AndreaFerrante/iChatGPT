@@ -52,3 +52,19 @@ def scrape_pdf_content(pdf_path:str = ""):
     except Exception as e:
         return str(e)
     
+
+def extract_text_from_pdf(file_stream):
+
+    """Extract text from a PDF file stream."""
+
+    reader = PyPDF2.PdfReader(file_stream)
+    texts  = []
+
+    for page_num in range(len(reader.pages)):
+        page = reader.pages[page_num]
+        texts.append(page.extract_text())
+
+    return texts
+
+
+
