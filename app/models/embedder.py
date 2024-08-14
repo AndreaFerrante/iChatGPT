@@ -2,14 +2,14 @@ import faiss
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from .utils import *
-from .openaikeys import openai_main_key
-from .openaiassistant import OpenAIAssistant
+from models.utils import *
+from models.openaikeys import openai_key
+from models.openaiassistant import OpenAIAssistant
 from transformers import BertTokenizer, BertModel, RobertaTokenizer, RobertaModel
 
 
 #################################################################
-openAIAssistant = OpenAIAssistant(openai_api_key=openai_main_key)
+openAIAssistant = OpenAIAssistant(openai_api_key=openai_key)
 #################################################################
 
 
@@ -178,14 +178,11 @@ def search_a_query_in_docs_with_faiss(normalized_page_embeddings = None,
     return closest_pages, cosine_similarity
 
 
-def get_pdf_dataframe_embeddings(all_pdf_in_path:pd.DataFrame=None, path_to_embed:str='', use_openai:bool=True):
+def get_pdf_dataframe_embeddings(all_pdf_in_path:pd.DataFrame=None, path_to_embed:str=None, use_openai:bool=True):
 
-    # path_to_embed   = os.getcwd() + '/RoboChatter/pdfs/'
-    # use_openai      = False
-    # all_pdf_in_path = None
 
     #########################################################
-    if all_pdf_in_path is None and path_to_embed != '':
+    if all_pdf_in_path is None and path_to_embed is None:
         all_pdf_in_path = scrape_pdf_content(path_to_embed)
     else:
         raise Exception('Pass a path to read PDFs from !')
@@ -199,7 +196,7 @@ def get_pdf_dataframe_embeddings(all_pdf_in_path:pd.DataFrame=None, path_to_embe
 
     if use_openai:
         for page in tqdm( all_pdf_in_path['FilePageFullText'] ):
-            page_embeddings.append( get_embeddings_openai(page) )
+            page_embeddings.append( openAIAssistant.get_embeddings_from_openai(page) )
     else:
         for page in tqdm( all_pdf_in_path['FilePageFullText'] ):
             page_embeddings.append( __get_embeddings_using_bert(page) )

@@ -16,9 +16,9 @@ class OpenAIAssistant(object):
         self.embedding_model = embedding_model
         self.__get_openai_client()
 
-    def __call__(self, openai_api_key:str="", gpt_model:str=gpt_4, embedding_model:str=embedding_small) -> None:
+    def __call__(self, openai_api_key:str="", gpt_model:str=gpt_4o, embedding_model:str=embedding_small) -> None:
         
-        if openai_main_key == "":
+        if openai_key == "":
             raise Exception("Attention: pass to OpenAIAssistant class the OpenAI key")
         
         self.openai_api_key  = openai_api_key
@@ -34,8 +34,8 @@ class OpenAIAssistant(object):
                 user_query:str       = "", 
                 return_object:bool   = False,
                 max_tokens:str       = 2048,
-                temperature:float    = 0.8,
-                model:str            = "gpt-3.5-turbo-0125",
+                temperature:float    = 0.75,
+                model:str            = gpt_4o,
                 system_content:str   = "You are a very accurate AI assistant that answers like if its whole life depends on the quality of the question."):
 
         """
@@ -86,8 +86,8 @@ class OpenAIAssistant(object):
 
     def get_embeddings_from_openai(self, 
                                    return_object:bool     = False,
-                                   text_to_embed:str      = "",
-                                   embedding_model:str    = ""):
+                                   text_to_embed:str      = None,
+                                   embedding_model:str    = embedding_small):
 
         """
         Retrieves embeddings for a specified text using a specific OpenAI embedding model.
@@ -107,8 +107,8 @@ class OpenAIAssistant(object):
             This function interacts with the OpenAI API's embeddings endpoint and formats the text by replacing newline and tab characters with spaces to ensure consistent input formatting.
         """
         
-        if text_to_embed == "":
-            raise Exception("Attention: pass a text to be embedded using OpenAI.")
+        if text_to_embed is None:
+            raise Exception("Attention: pass a 'text_to_embed' parameter using OpenAI.")
 
         if embedding_model == '':
             embedding_model = self.embedding_model
@@ -122,3 +122,8 @@ class OpenAIAssistant(object):
             return response
 
         return response.data[0].embedding
+
+
+
+
+
