@@ -1,3 +1,4 @@
+import os
 import re
 import PyPDF2
 
@@ -32,6 +33,17 @@ def spot_url(url_address:str=""):
     re.IGNORECASE)
 
     return bool(url_pattern.match(url_address))
+
+
+def create_folder_if_not_exist(path_to_create:str=None) -> None:
+
+    if path_to_create is None:
+        raise Exception(f'No path passed as parameter "path_to_create" to the function.')
+
+    if not os.path.exists(path_to_create):
+        os.makedirs(path_to_create)
+
+    return None
 
 
 def scrape_pdf_content(pdf_path:str = ""):

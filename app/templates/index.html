@@ -37,13 +37,27 @@
     </main>
 
     <form class="msger-inputarea">
-      <button class="upload-button" onclick="document.getElementById('upload-input').click();">
-        <img src="./static/clippy.svg" alt="Upload PDF">
+
+      <input type            = "file"
+             id              = "upload-input"
+             class           = "upload-input"
+             multiple accept = "application/pdf"
+             onchange        = "uploadFile(event)">
+
+      <button class="upload-button" type="submit" onclick="document.getElementById('upload-input').click();">
+        <img src="{{ url_for('static', filename='clippy.svg') }}" alt="Upload PDF">
       </button>
-      <input type="file" id="upload-input" class="upload-input" accept=".pdf" onchange="uploadFile(event)">
-      <input type="text" class="msger-input" id="textInput" placeholder="Enter your message...">
+
+      <input type="text" class="msger-input" id="textInput" placeholder="Enter your message here...">
       <button type="submit" class="msger-send-btn">Send</button>
+
     </form>
+
+
+
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
 
   </section>
 
