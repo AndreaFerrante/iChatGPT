@@ -18,15 +18,16 @@
   <section class="msger">
 
     <header class="msger-header">
-      <div class="msger-header-title">iChatGPT</div>
+      <div class="msger-header-title">iRobot</div>
     </header>
 
     <main class="msger-chat">
+
       <div class="msg left-msg">
-        <div class="msg-img" style="background-image: url(./static/chatbot.svg)"></div>
+        <div class="msg-img" style="background-image: {{ url_for('static', filename='chatbot.svg') }}"></div>
         <div class="msg-bubble">
           <div class="msg-info">
-            <div class="msg-info-name">iChatGPT</div>
+            <div class="msg-info-name">iRobot</div>
           </div>
 
           <div class="msg-text">
@@ -34,26 +35,29 @@
           </div>
         </div>
       </div>
+
     </main>
 
-    <form class="msger-inputarea">
+    <div id="input-container">
 
-      <input type            = "file"
-             id              = "upload-input"
-             class           = "upload-input"
-             multiple accept = "application/pdf"
-             onchange        = "uploadFile(event)">
+        <form class="msger-inputarea">
 
-      <button class="upload-button" type="submit" onclick="document.getElementById('upload-input').click();">
-        <img src="{{ url_for('static', filename='clippy.svg') }}" alt="Upload PDF">
-      </button>
+          <input type            = "file"
+                 id              = "upload-input"
+                 class           = "upload-input"
+                 multiple accept = "application/pdf"
+                 onchange        = "uploadFile(event)">
 
-      <input type="text" class="msger-input" id="textInput" placeholder="Enter your message here...">
-      <button type="submit" class="msger-send-btn">Send</button>
+          <button type="submit" class="upload-button" id="upload-button">
+              <img src="{{ url_for('static', filename='clippy.svg') }}" onclick="document.getElementById('upload-input').click();">
+          </button>
 
-    </form>
+          <input type ="text"   class = "msger-input" id="textInput" placeholder="Enter your message here...">
+          <button type="submit" class = "msger-send-btn">Send</button>
 
+        </form>
 
+    </div>
 
     <div id="progress-container">
         <div id="progress-bar"></div>

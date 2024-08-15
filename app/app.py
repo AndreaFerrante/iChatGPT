@@ -15,7 +15,7 @@ from models.embedder import get_pdf_dataframe_embeddings, search_a_query_in_docs
 #########################################################################################
 openAIAssistant = OpenAIAssistant(openai_api_key=openai_key)
 app             = Flask(__name__)
-index_id        = None # Variable used to understand if the user has dropped PDFs...
+index_id        = 0 # <<-- Variable used to understand if the user has dropped PDFs...
 create_folder_if_not_exist('uploads/')
 #########################################################################################
 
@@ -45,6 +45,9 @@ def create_faiss_index(embeddings):
 
 
 def query_documents(request, userText):
+
+    print('Hello there !')
+    return None
 
     data       = request.json
     index_id   = data.get('index_id')
@@ -76,12 +79,10 @@ def get_response():
 
     userText   = request.args.get('msg')
 
-
-
-    if True:
+    if not index_id:
         bot_answer = openAIAssistant.ask_gpt(user_query=userText)
-    elif False:
-        query_documents
+    else:
+        query_documents(request, userText)
 
     return bot_answer
 
@@ -93,14 +94,15 @@ def upload_pdf():
         return jsonify({'error': 'No file part'}), 400
 
     files         = request.files.getlist('files')
-    texts         = []
-    file_mappings = []
+    texts         = list()
+    file_mappings = list()
 
     for file in files:
 
         if file and file.filename.endswith('.pdf'):
+
             filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            filepath = os.path.join('uploads/', filename)
             file.save(filepath)
 
             pdf_texts = extract_text_from_pdf(filepath)
@@ -114,6 +116,7 @@ def upload_pdf():
     index_id = str(uuid.uuid4())
     np.save(f'{index_id}_embeddings.npy', embeddings.numpy())
     faiss.write_index(index, f'{index_id}.index')
+
     with open(f'{index_id}_mapping.txt', 'w') as f:
         for mapping in file_mappings:
             f.write(f"{mapping[0]}:{mapping[1]}\n")

@@ -1,13 +1,12 @@
-const msgerForm  = get(".msger-inputarea");
-const msgerInput = get(".msger-input");
-const msgerChat  = get(".msger-chat");
+const msgerForm       = get(".msger-inputarea");
+const msgerInput      = get(".msger-input");
+const msgerChat       = get(".msger-chat");
 
-
-const BOT_IMG     = "./static/chatbot.svg"
-const PERSON_IMG  = "./static/person.svg"
-const CLIPPY      = "./static/clippy.svg"
-const BOT_NAME    = "RoboChatter";
-const PERSON_NAME = "RoboUser";
+const BOT_IMG         = "./static/chatbot.svg"
+const PERSON_IMG      = "./static/person.svg"
+const CLIPPY          = "./static/clippy.svg"
+const BOT_NAME        = "iRobot";
+const PERSON_NAME     = "User";
 
 
 msgerForm.addEventListener("submit", event => {

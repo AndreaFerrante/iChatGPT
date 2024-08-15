@@ -123,6 +123,7 @@ body {
   color: #fff;
   border-bottom-right-radius: 0;
 }
+
 .right-msg .msg-img {
   margin: 0 0 0 10px;
 }
@@ -137,26 +138,27 @@ body {
 .msger-inputarea * {
   padding: 10px;
   border: none;
-  border-radius: 3px;
+  border-radius: 10px;
   font-size: 1em;
 }
 
 .msger-input {
   flex: 1;
+  flex-grow: 1;
   background: #ddd;
 }
 
 .msger-send-btn {
   margin-left: 10px;
-  background: rgb(0, 196, 65);
+  background: rgb(0, 195, 65);
   color: #fff;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.23s;
+  transition: background 0.2s;
 }
 
 .msger-send-btn:hover {
-  background: rgb(0, 50, 50);
+  background: rgb(0, 50, 0);
 }
 
 .msger-chat {
@@ -172,12 +174,19 @@ body {
 }
 
 .upload-button img {
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
 }
 
 .upload-input {
     display: none;
+}
+
+.input-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: start;
 }
 
 #progress-container {
