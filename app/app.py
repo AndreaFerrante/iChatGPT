@@ -93,15 +93,12 @@ def upload_pdf():
 
     if 'files' not in request.files:
         return jsonify({'error': f'No file part, here the request: {request}'}), 400
-
+    
     files         = request.files.getlist('files')
     texts         = list()
     file_mappings = list()
 
     for file in files:
-
-        # Read only PDFs for the moment ...
-        if file and file.filename.endswith('.pdf'):
 
             filename = secure_filename(file.filename)
             filepath = os.path.join('_uploads/', filename)

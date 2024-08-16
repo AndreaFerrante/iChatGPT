@@ -113,7 +113,3 @@ def search_a_query_in_docs_with_faiss(norm_embs=None, query="", dataframe_pdfs=N
     print(f"The cosine similarity for the most similar page is: '{cosine_similarity}'")
 
     return closest_pages, cosine_similarity
-
-
-
-
