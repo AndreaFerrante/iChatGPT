@@ -1,3 +1,5 @@
+app/_uploads
+app/_index_embeddings
 models/openaikeys.py
 
 .DS_store
