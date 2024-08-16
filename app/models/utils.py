@@ -1,8 +1,18 @@
 import os
 import re
+import nltk
 import PyPDF2
 import pandas as pd
 from tqdm import tqdm
+from nltk.tokenize import sent_tokenize
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+
+#################################################################
+nltk.download('punkt')
+nltk.download('stopwords')
+#################################################################
 
 
 def extract_file_extension(file_name:str = ""):
@@ -58,6 +68,35 @@ def is_folder_empty(folder_path:str=None):
         return len(os.listdir(folder_path)) == 0
     else:
         raise FileNotFoundError(f"The folder '{folder_path}' does not exist or is not a directory.")
+
+
+def chunk_text(text:str='', max_chunk_size:int=100) -> list:
+
+    """Chunks text into smaller sections based on sentence boundaries."""
+
+    if text == '':
+        raise Exception(f'Pass text to be chuncked first.')
+
+    try:
+
+        sentences     = sent_tokenize(text)
+        chunks        = list()
+        current_chunk = ''
+
+        for sentence in sentences:
+            if len(current_chunk) + len(sentence) <= max_chunk_size:
+                current_chunk += " " + sentence
+            else:
+                chunks.append(current_chunk.strip())
+                current_chunk = sentence
+
+        if current_chunk:
+            chunks.append(current_chunk.strip())
+
+        return chunks
+
+    except Exception as ex:
+        raise Exception(f'While performing chunking, we saw this issue: {ex}')
 
 
 def get_dataframe_pdf_content(pdf_path:str=None) -> pd.DataFrame:
