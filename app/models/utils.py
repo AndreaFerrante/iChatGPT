@@ -70,7 +70,11 @@ def is_folder_empty(folder_path:str=None):
         raise FileNotFoundError(f"The folder '{folder_path}' does not exist or is not a directory.")
 
 
+<<<<<<< HEAD
+def chunk_text(text:str='', chunk_size:int=100) -> list:
+=======
 def chunk_text(text:str='', max_chunk_size:int=100) -> list:
+>>>>>>> 02b940e278c2740c983665e62fbd7b93c0122e84
 
     """Chunks text into smaller sections based on sentence boundaries."""
 
@@ -84,7 +88,11 @@ def chunk_text(text:str='', max_chunk_size:int=100) -> list:
         current_chunk = ''
 
         for sentence in sentences:
+<<<<<<< HEAD
+            if len(current_chunk) + len(sentence) <= chunk_size:
+=======
             if len(current_chunk) + len(sentence) <= max_chunk_size:
+>>>>>>> 02b940e278c2740c983665e62fbd7b93c0122e84
                 current_chunk += " " + sentence
             else:
                 chunks.append(current_chunk.strip())
@@ -99,7 +107,11 @@ def chunk_text(text:str='', max_chunk_size:int=100) -> list:
         raise Exception(f'While performing chunking, we saw this issue: {ex}')
 
 
+<<<<<<< HEAD
+def get_dataframe_pdf_content(pdf_path:str=None, chunck_text:bool=False, chunk_size:int=100)->pd.DataFrame:
+=======
 def get_dataframe_pdf_content(pdf_path:str=None) -> pd.DataFrame:
+>>>>>>> 02b940e278c2740c983665e62fbd7b93c0122e84
 
     """
         Extracts text content from each page of a PDF file and returns it in a pandas DataFrame.
@@ -147,6 +159,10 @@ def get_dataframe_pdf_content(pdf_path:str=None) -> pd.DataFrame:
     page_number       = list()
     pdf_name          = list()
 
+<<<<<<< HEAD
+    # Read each PDF in the folder...
+=======
+>>>>>>> 02b940e278c2740c983665e62fbd7b93c0122e84
     for pdf in tqdm(pdf_in_path):
 
         try:
@@ -155,11 +171,39 @@ def get_dataframe_pdf_content(pdf_path:str=None) -> pd.DataFrame:
 
                 pdf_reader  = PyPDF2.PdfReader(file)
 
+<<<<<<< HEAD
+                # For each page in the PDF extract its text...
+                for num_page, page in enumerate(pdf_reader.pages):
+
+                    pdf_page_text = str(page.extract_text())
+                    pdf_page_text = pdf_page_text.replace('\n', ' ')
+
+                    # If we want to chunck our page's text, we must "extend" to the number of chuncks our file df...
+                    if chunck_text:
+
+                        ###############################################################
+                        chuncks = chunk_text(text=pdf_page_text, chunk_size=chunk_size)
+                        ###############################################################
+
+                        if len(chuncks):
+                            for chunck in chuncks:
+                                page_text.append(chunck)
+                                page_number.append(int(num_page + 1))
+                                pdf_name.append(str(pdf))
+                        else:
+                            continue
+
+                    else:
+                        page_text.append( pdf_page_text )
+                        page_number.append( int(num_page + 1) )
+                        pdf_name.append( str(pdf) )
+=======
                 for num_page, page in enumerate(pdf_reader.pages):
 
                     page_text.append( str(page.extract_text()).replace('\n', ' ') )
                     page_number.append( int(num_page + 1) )
                     pdf_name.append( str(pdf) )
+>>>>>>> 02b940e278c2740c983665e62fbd7b93c0122e84
 
         except Exception as e:
             return str(e)

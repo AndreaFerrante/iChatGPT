@@ -5,7 +5,7 @@ from models.openaikeys import *
 
 class OpenAIAssistant(object):
 
-    def __init__(self, openai_api_key:str="", gpt_model:str=gpt_4, embedding_model:str=embedding_small) -> None:
+    def __init__(self, openai_api_key:str="", gpt_model:str=gpt_4, embedding_model:str=embedding_large) -> None:
         
         if openai_api_key == "":
             raise Exception("Attention: pass to OpenAIAssistant class the OpenAI key")
@@ -16,7 +16,7 @@ class OpenAIAssistant(object):
         self.embedding_model = embedding_model
         self.__get_openai_client()
 
-    def __call__(self, openai_api_key:str="", gpt_model:str=gpt_4o, embedding_model:str=embedding_small) -> None:
+    def __call__(self, openai_api_key:str="", gpt_model:str=gpt_4o, embedding_model:str=embedding_large) -> None:
         
         if openai_key == "":
             raise Exception("Attention: pass to OpenAIAssistant class the OpenAI key")
@@ -87,7 +87,7 @@ class OpenAIAssistant(object):
     def get_embeddings_from_openai(self, 
                                    return_object:bool     = False,
                                    text_to_embed:str      = None,
-                                   embedding_model:str    = embedding_small):
+                                   embedding_model:str    = ''):
 
         """
         Retrieves embeddings for a specified text using a specific OpenAI embedding model.
@@ -122,8 +122,3 @@ class OpenAIAssistant(object):
             return response
 
         return response.data[0].embedding
-
-
-
-
-
