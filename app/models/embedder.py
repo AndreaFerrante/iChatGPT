@@ -2,9 +2,9 @@ import faiss
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from models.utils import *
 from models.openaikeys import openai_key
 from models.openaiassistant import OpenAIAssistant
+from models.utils import get_dataframe_pdf_content
 from transformers import BertTokenizer, BertModel, RobertaTokenizer, RobertaModel
 
 
@@ -129,11 +129,9 @@ def __get_embeddings_using_xml_roberta(text:str, return_reshaped:bool=False):
 
 
 def search_a_query_in_docs_with_faiss(normalized_page_embeddings = None,
+                                      query: str                 = "",
                                       dataframe_pdfs             = None,
-                                      use_openai:bool            = True,
-                                      use_bert:bool              = False,
                                       print_output:bool          = True,
-                                      query:str                  = "",
                                       k_closest:int              = 1):
 
     if query == '':
@@ -146,19 +144,12 @@ def search_a_query_in_docs_with_faiss(normalized_page_embeddings = None,
         raise Exception('Attention, column named FilePageFullText is not in the dataframe of all PDFs scraped ! Pass it.')
 
     # 1. Build FAISS index (use Inner Product Similarity to equate CosineSimilarity when vectors are normalized)
-    index = faiss.IndexFlatIP(normalized_page_embeddings.shape[1])
+    index = faiss.IndexFlatL2(normalized_page_embeddings.shape[1])
     index.add(normalized_page_embeddings)
 
     # 2. Embed the query
-    if use_openai:
-        query_embedding            = np.array(openAIAssistant.get_embeddings_from_openai(text_to_embed=query)).squeeze()
-        normalized_query_embedding = __normalize_vectors(np.array([query_embedding]))
-    elif use_bert:
-        query_embedding            = np.array(__get_embeddings_using_bert(query)).squeeze()
-        normalized_query_embedding = __normalize_vectors(np.array([query_embedding]))
-    else:
-        query_embedding            = np.array(__get_embeddings_using_xml_roberta(query)).squeeze()
-        normalized_query_embedding = __normalize_vectors(np.array([query_embedding]))
+    query_embedding            = np.array(openAIAssistant.get_embeddings_from_openai(text_to_embed=query)).squeeze()
+    normalized_query_embedding = __normalize_vectors(np.array([query_embedding]))
 
     ####################################################################################################################
     # 3. Perform search to find close page/pages ...
@@ -170,42 +161,54 @@ def search_a_query_in_docs_with_faiss(normalized_page_embeddings = None,
     ####################################################################################################################
 
     if print_output:
-        print(f"The matrix distance is: {D}")
-        print(f"The index is: {I}")
-        print(f"The page/pages most similar to the query is: '{closest_pages}'")
+        
+        print(f"The matrix distance is: {D} \n")
+        print(f"The index is: {I} \n")
+        print(f"The page/pages most similar to the query is: '{closest_pages}' \n")
         print(f"The cosine similarity is: '{cosine_similarity}'")
 
     return closest_pages, cosine_similarity
 
 
-def get_pdf_dataframe_embeddings(all_pdf_in_path:pd.DataFrame=None, path_to_embed:str=None, use_openai:bool=True):
+def get_pdf_dataframe_embeddings(all_pdf_in_path:pd.DataFrame=None, use_openai:bool=True, return_norm_embeddings:bool=False):
 
-
-    #########################################################
-    if all_pdf_in_path is None and path_to_embed is None:
-        all_pdf_in_path = scrape_pdf_content(path_to_embed)
-    else:
-        raise Exception('Pass a path to read PDFs from !')
-    #########################################################
+    ##############################################################
+    if all_pdf_in_path is None:
+        raise Exception('Pass a DataFrame with all the PDFs read.')
+    ##############################################################
 
     if 'FilePageFullText' not in all_pdf_in_path.columns:
-        raise Exception('Attention, column named FilePageFullText is not present.')
+        raise Exception('Attention, a column named FilePageFullText is not present.')
 
     print('Processing embeddings for each and single page...')
     page_embeddings = list()
 
     if use_openai:
         for page in tqdm( all_pdf_in_path['FilePageFullText'] ):
-            page_embeddings.append( openAIAssistant.get_embeddings_from_openai(page) )
+            page_embeddings.append( openAIAssistant.get_embeddings_from_openai(text_to_embed=str(page)) )
     else:
         for page in tqdm( all_pdf_in_path['FilePageFullText'] ):
             page_embeddings.append( __get_embeddings_using_bert(page) )
 
     page_embeddings                   = np.array(page_embeddings).squeeze()
     normalized_page_embeddings        = __normalize_vectors(page_embeddings)
-    all_pdf_in_path['PageEmbeddings'] = [list(x) for x in normalized_page_embeddings]
+    all_pdf_in_path['FilePageEmbeddings'] = [list(x) for x in normalized_page_embeddings]
 
-    return all_pdf_in_path, normalized_page_embeddings
+    if return_norm_embeddings:
+        return all_pdf_in_path, normalized_page_embeddings
+
+    return all_pdf_in_path
 
 
+
+
+pdf_path = 'C:/Users/Andrea/Downloads/'
+pdf_df = get_dataframe_pdf_content(pdf_path = pdf_path)
+pdf_df, norm_embeds = get_pdf_dataframe_embeddings(all_pdf_in_path=pdf_df, return_norm_embeddings=True)
+
+query = 'In the middle of a project, a new requirement was added to the scope. The business analyst must determine if any impacts, dependencies, or risks are associated with the addition to the scope. What task should the business analyst perform in order to identify these impacts? The answer options are: A. Manage requirements traceability. B. Manage assumptions and constraints. C. Manage solution scope. D. Manage requirements prioritization.'
+a, b = search_a_query_in_docs_with_faiss(normalized_page_embeddings = norm_embeds,
+                                         query                      = query,
+                                         dataframe_pdfs             = pdf_df,
+                                         k_closest                  = 3)
 

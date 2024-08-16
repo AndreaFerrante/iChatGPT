@@ -182,7 +182,7 @@ body {
     display: none;
 }
 
-.input-container {
+#input-container {
     width: 100%;
     display: flex;
     align-items: center;

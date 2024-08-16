@@ -7,47 +7,61 @@ from PyPDF2 import PdfReader
 from models.openaikeys import openai_key
 from werkzeug.utils import secure_filename
 from models.openaiassistant import OpenAIAssistant
-from models.utils import create_folder_if_not_exist
-from flask import Flask, render_template, request, jsonify, url_for, redirect
-from models.embedder import get_pdf_dataframe_embeddings, search_a_query_in_docs_with_faiss
+from models.utils import create_folder_if_not_exist, is_folder_empty
+from flask import Flask, render_template, request, jsonify
 
 
 #########################################################################################
 openAIAssistant = OpenAIAssistant(openai_api_key=openai_key)
 app             = Flask(__name__)
-index_id        = 0 # <<-- Variable used to understand if the user has dropped PDFs...
-create_folder_if_not_exist('uploads/')
+create_folder_if_not_exist('_uploads/')
+create_folder_if_not_exist('_index_embeddings/')
 #########################################################################################
 
 
-def extract_text_from_pdf(pdf_path):
+def extract_text_from_pdf(pdf_path) -> list:
 
     reader = PdfReader(pdf_path)
-    texts = []
+    texts = list()
 
     for page in reader.pages:
-        texts.append(page.extract_text())
+        texts.append(str(page.extract_text()))
 
     return texts
 
 
-def generate_embeddings(text_to_embed):
-    return openAIAssistant.get_embeddings_from_openai(text_to_embed=text_to_embed)
+def generate_embeddings(texts_to_embed:list=None) -> list:
+
+    if texts_to_embed is None or not isinstance(texts_to_embed, list):
+        raise Exception(f'Pass to the function a "LIST" of texts to be "EMBEDDED".')
+
+    try:
+
+        embeds = list()
+        for text_to_embed in texts_to_embed:
+            embeds.append( np.array(openAIAssistant.get_embeddings_from_openai(text_to_embed=str(text_to_embed))).squeeze() )
+
+        return embeds
+
+    except Exception as ex:
+        raise Exception(f'While embeddings, there was this Exception: {ex}')
 
 
-def create_faiss_index(embeddings):
+def create_faiss_index(embeddings: np.array):
 
-    dimension = embeddings.shape[1]
-    index      = faiss.IndexFlatL2(dimension)
-    index.add(embeddings.numpy())
+    try:
 
-    return index
+        dimension = embeddings.shape[1]
+        index      = faiss.IndexFlatIP(dimension)
+        index.add(embeddings)
+
+        return index
+
+    except Exception as ex:
+        raise Exception(f'While creating Faiss Index, this occured: \n\n {ex}')
 
 
 def query_documents(request, userText):
-
-    print('Hello there !')
-    return None
 
     data       = request.json
     index_id   = data.get('index_id')
@@ -55,13 +69,13 @@ def query_documents(request, userText):
     if not index_id or not userText:
         return jsonify({'error': 'Invalid request'}), 400
 
-    index      = faiss.read_index(f'{index_id}.index')
-    # embeddings = np.load(f'{index_id}_embeddings.npy')
+    index      = faiss.read_index(f'./_index_embeddings/{index_id}.index')
+    embeddings = np.load(f'./_index_embeddings/{index_id}_embeddings.npy')
 
-    query_embedding = openAIAssistant.get_embeddings_from_openai(text_to_embed=userText)
-    _, I = index.search(query_embedding.numpy(), 1)
+    query_embedding = np.array(openAIAssistant.get_embeddings_from_openai(text_to_embed=userText)).squeeze()
+    _, I = index.search(query_embedding, 1)
 
-    with open(f'{index_id}_mapping.txt', 'r') as f:
+    with open(f'./_index_embeddings/{index_id}_mapping.txt', 'r') as f:
         mappings = f.readlines()
 
     result = mappings[I[0][0]].strip().split(':')
@@ -74,24 +88,11 @@ def index():
     return render_template('index.html')
 
 
-@app.route("/get", methods=['POST', 'GET'])
-def get_response():
-
-    userText   = request.args.get('msg')
-
-    if not index_id:
-        bot_answer = openAIAssistant.ask_gpt(user_query=userText)
-    else:
-        query_documents(request, userText)
-
-    return bot_answer
-
-
 @app.route('/upload', methods=['POST'])
 def upload_pdf():
 
     if 'files' not in request.files:
-        return jsonify({'error': 'No file part'}), 400
+        return jsonify({'error': f'No file part, here the request: {request}'}), 400
 
     files         = request.files.getlist('files')
     texts         = list()
@@ -99,29 +100,51 @@ def upload_pdf():
 
     for file in files:
 
+        # Read only PDFs for the moment ...
         if file and file.filename.endswith('.pdf'):
 
             filename = secure_filename(file.filename)
-            filepath = os.path.join('uploads/', filename)
+            filepath = os.path.join('_uploads/', filename)
             file.save(filepath)
 
             pdf_texts = extract_text_from_pdf(filepath)
             texts.extend(pdf_texts)
             file_mappings.extend([(filename, i) for i in range(len(pdf_texts))])
 
-    embeddings = generate_embeddings(texts)
-    index      = create_faiss_index(embeddings)
+    # Create embeddings
+    if os.path.exists('./_index_embeddings/embeddings.txt'):
+        embeddings = np.load('./_index_embeddings/embeddings.npy')
+    else:
+        embeddings = generate_embeddings(texts)
+        embeddings = np.array(embeddings)
+        np.save('./_index_embeddings/embeddings.npy', embeddings)
+
+    index = create_faiss_index(embeddings=embeddings)
 
     # Save index and mappings
     index_id = str(uuid.uuid4())
-    np.save(f'{index_id}_embeddings.npy', embeddings.numpy())
-    faiss.write_index(index, f'{index_id}.index')
+    np.save(f'./_index_embeddings/{index_id}_embeddings.npy', embeddings)
+    faiss.write_index(index, f'./_index_embeddings/{index_id}.index')
 
-    with open(f'{index_id}_mapping.txt', 'w') as f:
+    with open(f'./_index_embeddings/{index_id}_mapping.txt', 'w') as f:
         for mapping in file_mappings:
-            f.write(f"{mapping[0]}:{mapping[1]}\n")
+            f.write(f"./index_embeddings/{mapping[0]}:{mapping[1]}\n")
 
     return jsonify({'index_id': index_id})
+
+
+@app.route("/get", methods=['POST', 'GET'])
+def get_response():
+
+    userText = request.args.get('msg')
+    is_empty = is_folder_empty( '_uploads/' ) and is_folder_empty( '_index_embeddings/' )
+
+    if is_empty:
+        bot_answer = openAIAssistant.ask_gpt(user_query=userText)
+    else:
+        bot_answer = query_documents(request, userText)
+
+    return str(bot_answer)
 
 
 if __name__ == "__main__":

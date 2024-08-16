@@ -21,6 +21,38 @@ msgerForm.addEventListener("submit", event => {
 });
 
 
+async function uploadFile(event) {
+
+    event.preventDefault();
+
+    const files = document.getElementById('upload-input').files;
+    if (files.length === 0) {
+        alert('Please select a file!');
+        return;
+    }
+
+    const formData = new FormData();
+    for (const file of files) {
+        formData.append('files', file);
+    }
+
+    document.getElementById('progress-container').style.display = 'block';
+
+    const response = await fetch('/upload', {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        alert('Files uploaded successfully. You can now make a query to yours files now.');
+    } else {
+        alert('Failed to upload files,');
+    }
+
+}
+
+
 function appendMessage(name, img, side, text) {
   // Simple solution for small apps
 
@@ -41,31 +73,6 @@ function appendMessage(name, img, side, text) {
 
   msgerChat.insertAdjacentHTML("beforeend", msgHTML);
   msgerChat.scrollTop += 500;
-}
-
-
-function uploadFile(event) {
-
-    const fileInput = event.target;
-    const file      = fileInput.files[0];
-
-    if (file) {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        fetch('/upload', {
-            method: 'POST',
-            body: formData,
-        })
-        .then(response => response.text())
-        .then(data => {
-            alert('hi there');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    }
-
 }
 
 

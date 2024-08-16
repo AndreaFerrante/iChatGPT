@@ -1,6 +1,8 @@
 import os
 import re
 import PyPDF2
+import pandas as pd
+from tqdm import tqdm
 
 
 def extract_file_extension(file_name:str = ""):
@@ -46,37 +48,84 @@ def create_folder_if_not_exist(path_to_create:str=None) -> None:
     return None
 
 
-def scrape_pdf_content(pdf_path:str = ""):
+def is_folder_empty(folder_path:str=None):
 
-    if pdf_path == "":
-        raise Exception("Attention: pass to the function a valid path tp the PDF.")
+    if folder_path is None:
+        raise Exception(f'No path passed as parameter "folder_path" to the function.')
 
-    try:
-        with open(pdf_path, 'rb') as file:
-            pdf_reader = PyPDF2.PdfReader(file)
-            all_text = ''
-            
-            for page in pdf_reader.pages:
-                all_text += page.extract_text() + '\n'
-            
-            return all_text
-        
-    except Exception as e:
-        return str(e)
-    
-
-def extract_text_from_pdf(file_stream):
-
-    """Extract text from a PDF file stream."""
-
-    reader = PyPDF2.PdfReader(file_stream)
-    texts  = []
-
-    for page_num in range(len(reader.pages)):
-        page = reader.pages[page_num]
-        texts.append(page.extract_text())
-
-    return texts
+    # List the contents of the folder
+    if os.path.exists(folder_path) and os.path.isdir(folder_path):
+        return len(os.listdir(folder_path)) == 0
+    else:
+        raise FileNotFoundError(f"The folder '{folder_path}' does not exist or is not a directory.")
 
 
+def get_dataframe_pdf_content(pdf_path:str=None) -> pd.DataFrame:
 
+    """
+        Extracts text content from each page of a PDF file and returns it in a pandas DataFrame.
+
+        Parameters:
+        -----------
+        pdf_path : str, optional
+            The full path to the PDF file. If not provided or an empty string, an exception is raised.
+        pdf_name : str, optional
+            The name of the PDF file to be included in the DataFrame. If not provided, the column will contain empty strings.
+
+        Returns:
+        --------
+        pd.DataFrame
+            A DataFrame with three columns:
+            - 'FileName': The name of the PDF file (or the provided `pdf_name`).
+            - 'FilePageFullText': The extracted text content from each page of the PDF.
+            - 'FilePageNumber': The corresponding page numbers for each extracted text.
+
+        Raises:
+        -------
+        Exception
+            If `pdf_path` is not provided or if there is an error reading the PDF file.
+
+        Example:
+        --------
+        >>> df = get_dataframe_pdf_content("example.pdf", "Example PDF")
+        >>> print(df.head())
+           FileName                                FilePageFullText  FilePageNumber
+        0  Example PDF  This is the text content of page 1...                    1
+        1  Example PDF  This is the text content of page 2...                    2
+
+        Notes:
+        ------
+        This function uses the PyPDF2 library to extract text from PDF files. Make sure that the library is installed
+        before using this function.
+        """
+
+    if pdf_path is None:
+        raise Exception("Attention: pass to the function a valid path containing PDFs to embed.")
+
+    all_files_in_path = os.listdir(pdf_path)
+    pdf_in_path       = [file for file in all_files_in_path if file.endswith('.pdf')]
+    page_text         = list()
+    page_number       = list()
+    pdf_name          = list()
+
+    for pdf in tqdm(pdf_in_path):
+
+        try:
+
+            with open(pdf_path + pdf, 'rb') as file:
+
+                pdf_reader  = PyPDF2.PdfReader(file)
+
+                for num_page, page in enumerate(pdf_reader.pages):
+
+                    page_text.append( str(page.extract_text()).replace('\n', ' ') )
+                    page_number.append( int(num_page + 1) )
+                    pdf_name.append( str(pdf) )
+
+        except Exception as e:
+            return str(e)
+
+    return pd.DataFrame({'FileName':         pdf_name,
+                         'FilePageChars':    [len(x) for x in page_text],
+                         'FilePageFullText': page_text,
+                         'FilePageNumber':   page_number})
