@@ -1,6 +1,4 @@
-app/_uploads
-app/_index_embeddings
-models/openaikeys.py
+closeai/openaikeys.py
 
 .DS_store
 .Rhistory
