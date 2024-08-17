@@ -175,6 +175,8 @@ def get_dataframe_pdf_content(pdf_path:str=None, chunck_text:bool=False, chunk_s
 
                         if len(chuncks):
                             for chunck in chuncks:
+                                if len(chunck) == 0:
+                                    continue
                                 page_text.append(chunck)
                                 page_number.append(int(num_page + 1))
                                 pdf_name.append(str(pdf))

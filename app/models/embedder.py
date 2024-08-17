@@ -88,7 +88,7 @@ def search_a_query_in_docs_with_faiss(norm_embs=None, query="", dataframe_pdfs=N
         raise Exception('Attention, column named FilePageFullText is not in the dataframe of all PDFs scraped ! Pass it.')
 
     # 1. Build FAISS index (use Inner Product Similarity to equate CosineSimilarity when vectors are normalized)
-    index = faiss.IndexFlatL2(norm_embs.shape[1])
+    index = faiss.IndexFlatIP(norm_embs.shape[1])
     index.add(norm_embs)
 
     # 2. Embed the query
@@ -113,3 +113,17 @@ def search_a_query_in_docs_with_faiss(norm_embs=None, query="", dataframe_pdfs=N
     print(f"The cosine similarity for the most similar page is: '{cosine_similarity}'")
 
     return closest_pages, cosine_similarity
+
+
+
+from models.utils import get_dataframe_pdf_content
+pdf_path            = 'C:/Users/Andrea/Downloads/'
+pdf_df              = get_dataframe_pdf_content(pdf_path = pdf_path, chunck_text=True)
+pdf_df, norm_embeds = get_pdf_dataframe_embeddings(pdfs_in_path=pdf_df, return_norm_embeddings=True)
+
+
+query = "In the middle of a project, a new requirement was added to the scope. The business analyst must determine if any impacts, dependencies, or risks are associated with the addition to the scope. What task should the business analyst perform in order to identify these impacts? The answer options are: A. Manage requirements traceability. B. Manage assumptions and constraints. C. Manage solution scope. D. Manage requirements prioritization."
+D, I  = search_a_query_in_docs_with_faiss(norm_embs      = norm_embeds,
+                                          query          = query,
+                                          dataframe_pdfs = pdf_df,
+                                          k_closest      = 5)
