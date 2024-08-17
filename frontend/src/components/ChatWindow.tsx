@@ -15,7 +15,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
     <Box
       display="flex"
       flexDirection="column"
-      height="400px"
+      height="500px"
       overflow="auto"
       border={1}
       padding={2}

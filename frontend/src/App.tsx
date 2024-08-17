@@ -1,17 +1,33 @@
 import './App.css'
-import { makeStyles } from '@mui/styles';
 import React, { useState } from 'react';
 import { Box, Container } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ChatWindow from './components/ChatWindow';
 import MessageInput from './components/MessageInput';
 import UploadButton from './components/UploadButton';
 import LoadingIndicator from './components/LoadingIndicator';
 import UploadSuccessModal from './components/UploadSuccessModal';
 
+
+const theme = createTheme({
+  typography: {
+    fontSize: 14, // Default font size in px, which can be adjusted
+    body1: {
+      fontSize: '0.875rem', // Specific body text size
+    },
+    button: {
+      fontSize: '0.75rem', // Smaller button text size
+    },
+    // You can further customize typography for headers, captions, etc.
+  },
+});
+
+
 interface ChatMessage {
   sender: 'user' | 'bot';
   message: string;
 }
+
 
 const App: React.FC = () => {
 
@@ -45,7 +61,7 @@ const App: React.FC = () => {
       setTimeout(() => {
         setUploading(false);
         setModalOpen(true);
-      }, 2000);
+      }, 1500);
     }
   };
 
@@ -54,6 +70,9 @@ const App: React.FC = () => {
   };
 
   return (
+
+    <ThemeProvider theme={theme}>
+
     <Box 
       sx={{
         display: 'flex',
@@ -85,8 +104,12 @@ const App: React.FC = () => {
         )}
 
         <UploadSuccessModal open={modalOpen} handleClose={handleCloseModal} />
+        
       </Container>
     </Box>
+
+    </ThemeProvider>
+
   );
 };
 
