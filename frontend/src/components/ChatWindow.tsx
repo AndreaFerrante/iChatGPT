@@ -11,30 +11,39 @@ interface ChatWindowProps {
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
+
   return (
+    
     <Box
       display="flex"
       flexDirection="column"
-      height="500px"
+      height="610px"
+      width="820px"
       overflow="auto"
       border={1}
-      padding={2}
+      padding={1}
       borderRadius={2}
-      bgcolor="white"
+      bgcolor="whitesmoke"
     >
       {messages.map((msg, index) => (
         <Box
           key={index}
-          margin={1}
-          padding={2}
-          borderRadius={10}
+          margin={0.5}
+          padding={1}
+          borderRadius={2}
           alignSelf={msg.sender === 'user' ? 'flex-end' : 'flex-start'}
           bgcolor={msg.sender === 'user' ? 'lightblue' : 'lightgreen'}
+          sx={{
+            maxWidth: '75%',            // Limit the width of the chat bubble
+            wordWrap: 'break-word',     // Ensure long words break correctly
+            overflowWrap: 'break-word', // Handle long words or URLs
+          }}
         >
           {msg.message}
         </Box>
       ))}
     </Box>
+
   );
 };
 

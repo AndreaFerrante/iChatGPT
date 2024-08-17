@@ -8,20 +8,27 @@ interface MessageInputProps {
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({ input, setInput, handleSend }) => {
+
   return (
-    <Box display="flex" alignItems="center" marginTop={2}>
+
+    <Box display="flex" alignItems="center" marginTop={10}>
+      
       <TextField
         variant="outlined"
         fullWidth
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Type a message..."
+        placeholder="Write a message..."
       />
+
       <Button variant="contained" color="primary" onClick={handleSend} style={{ marginLeft: '10px' }}>
         Send
       </Button>
+
     </Box>
+
   );
+
 };
 
 export default MessageInput;

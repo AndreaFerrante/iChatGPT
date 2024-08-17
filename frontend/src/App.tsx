@@ -10,16 +10,18 @@ import UploadSuccessModal from './components/UploadSuccessModal';
 
 
 const theme = createTheme({
+
   typography: {
-    fontSize: 14, // Default font size in px, which can be adjusted
+    fontSize: 11, // Default font size in px, which can be adjusted
     body1: {
-      fontSize: '0.875rem', // Specific body text size
+      fontSize: '0.8rem', // Specific body text size
     },
     button: {
-      fontSize: '0.75rem', // Smaller button text size
-    },
-    // You can further customize typography for headers, captions, etc.
+      fontSize: '1rem', // Smaller button text size
+    }
+    
   },
+
 });
 
 
@@ -85,7 +87,7 @@ const App: React.FC = () => {
       }}
     >
       <Container
-        maxWidth="sm"
+        maxWidth="md"
         sx={{
           bgcolor: 'lightgray',
           padding: '20px',
@@ -104,7 +106,7 @@ const App: React.FC = () => {
         )}
 
         <UploadSuccessModal open={modalOpen} handleClose={handleCloseModal} />
-        
+
       </Container>
     </Box>
 
