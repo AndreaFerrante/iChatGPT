@@ -17,12 +17,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
     <Box
       display="flex"
       flexDirection="column"
-      height="610px"
+      height="620px"
       width="820px"
       overflow="auto"
       border={1}
-      padding={1}
-      borderRadius={2}
+      padding={0}
+      borderRadius={3}
       bgcolor="whitesmoke"
     >
       {messages.map((msg, index) => (
@@ -30,7 +30,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
           key={index}
           margin={0.5}
           padding={1}
-          borderRadius={2}
+          borderRadius={1.5}
           alignSelf={msg.sender === 'user' ? 'flex-end' : 'flex-start'}
           bgcolor={msg.sender === 'user' ? 'lightblue' : 'lightgreen'}
           sx={{

@@ -7,7 +7,9 @@ interface UploadSuccessModalProps {
 }
 
 const UploadSuccessModal: React.FC<UploadSuccessModalProps> = ({ open, handleClose }) => {
+
   return (
+
     <Modal
       open={open}
       onClose={handleClose}
@@ -29,7 +31,7 @@ const UploadSuccessModal: React.FC<UploadSuccessModalProps> = ({ open, handleClo
         }}
       >
         <Typography id="modal-title" variant="h6" component="h2" gutterBottom>
-          Upload Successful!
+          Upload and Embedding Successful!
         </Typography>
         <Typography id="modal-description" variant="body1" gutterBottom>
           Your document has been uploaded and processed.
@@ -39,7 +41,9 @@ const UploadSuccessModal: React.FC<UploadSuccessModalProps> = ({ open, handleClo
         </Button>
       </Box>
     </Modal>
+
   );
+  
 };
 
 export default UploadSuccessModal;

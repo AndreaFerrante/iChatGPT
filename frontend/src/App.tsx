@@ -14,10 +14,10 @@ const theme = createTheme({
   typography: {
     fontSize: 11, // Default font size in px, which can be adjusted
     body1: {
-      fontSize: '0.8rem', // Specific body text size
+      fontSize: 15, // Specific body text size
     },
     button: {
-      fontSize: '1rem', // Smaller button text size
+      fontSize: 15, // Smaller button text size
     }
     
   },
