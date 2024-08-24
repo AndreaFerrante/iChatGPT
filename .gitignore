@@ -56,4 +56,4 @@ coverage.xml
 
 ##################################
 # files and directories to exclude
-openaikeys.py
+closeai/openaikeys.py
