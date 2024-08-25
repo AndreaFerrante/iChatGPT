@@ -1,18 +1,10 @@
 import os
 import re
-import nltk
+import glob
 import PyPDF2
 import pandas as pd
 from tqdm import tqdm
 from nltk.tokenize import sent_tokenize
-from nltk.corpus import stopwords
-from sklearn.feature_extraction.text import TfidfVectorizer
-
-
-#################################################################
-nltk.download('punkt')
-nltk.download('stopwords')
-#################################################################
 
 
 def extract_file_extension(file_name:str = ""):
@@ -56,6 +48,18 @@ def create_folder_if_not_exist(path_to_create:str=None) -> None:
         os.makedirs(path_to_create)
 
     return None
+
+
+def clear_all_files_in_folder(path_to_cancel_files:str =  None):
+
+    files = glob.glob(os.path.join(path_to_cancel_files, '*'))
+
+    for file_path in files:
+        try:
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+        except Exception as e:
+            raise Exception(f"Error deleting in function 'clear_all_files_in_folder': {e}")
 
 
 def is_folder_empty(folder_path:str=None):

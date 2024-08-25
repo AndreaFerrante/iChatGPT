@@ -1,6 +1,5 @@
 from openai import OpenAI
-from models.openaimodels import *
-from models.openaikeys import *
+from closeai.openaimodels import *
 
 
 class OpenAIAssistant(object):
@@ -18,7 +17,7 @@ class OpenAIAssistant(object):
 
     def __call__(self, openai_api_key:str="", gpt_model:str=gpt_4o, embedding_model:str=embedding_large) -> None:
         
-        if openai_key == "":
+        if openai_api_key == "":
             raise Exception("Attention: pass to OpenAIAssistant class the OpenAI key")
         
         self.openai_api_key  = openai_api_key
