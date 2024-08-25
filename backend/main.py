@@ -1,7 +1,7 @@
 import os
 import uvicorn
-from pydantic import BaseModel
 from embedder.embedder import *
+from backend.models.api_models import *
 from fastapi.responses import JSONResponse
 from openaiassistant import OpenAIAssistant
 from closeai.openaikeys import openai_main_key
@@ -10,21 +10,13 @@ from backend.utils.utils import create_folder_if_not_exist, clear_all_files_in_f
 from backend.utils.utils import is_folder_empty,get_dataframe_pdf_content
 
 
-################################################################
-norm_embeds           = None
-pdfs                  = None
+#######################################################################
+norm_embeds           = ''
+pdfs                  = ''
 UPLOAD_DIR            = './uploads/'
 app                   = FastAPI()
 openAIBot             = OpenAIAssistant(openai_api_key=openai_main_key)
-################################################################
-
-
-class ChatRequest(BaseModel):
-    query: str
-
-
-class ChatResponse(BaseModel):
-    response: str
+#######################################################################
 
 
 @app.post("/api/upload")
@@ -81,9 +73,10 @@ async def chat(request: ChatRequest):
         # In the other case, let's implement RAG.
         else:
 
-            if norm_embeds is None and pdfs is None:
-                pdfs              = get_dataframe_pdf_content(pdf_path='./uploads/', chunck_text=True)
-                pdfs, norm_embeds = get_pdf_dataframe_embeddings(pdfs_in_path='./uploads/', return_norm_embeddings=True)
+            #if norm_embeds is None and pdfs is None:
+            if True:
+                pdf_df              = get_dataframe_pdf_content(pdf_path = UPLOAD_DIR, chunck_text=True)
+                pdf_df, norm_embeds = get_pdf_dataframe_embeddings(pdfs_in_path = pdf_df, return_norm_embeddings=True)
             return ChatResponse(response='hello world')
 
             D, I  = search_a_query_in_docs_with_faiss(norm_embs = norm_embeds, query = query, dataframe_pdfs = pdf_df, k_closest = 5)

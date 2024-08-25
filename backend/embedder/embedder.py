@@ -2,6 +2,7 @@ import faiss
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+from fastapi import HTTPException
 from closeai.openaikeys import openai_main_key
 from closeai.openaiassistant import OpenAIAssistant
 
@@ -49,13 +50,13 @@ def __normalize_vectors(vectors):
 
 def get_pdf_dataframe_embeddings(pdfs_in_path:pd.DataFrame=None, return_norm_embeddings:bool=False):
 
-    ##############################################################
+    ############################################################################################
     if pdfs_in_path is None:
-        raise Exception('Pass a DataFrame with all the PDFs read.')
-    ##############################################################
+        return HTTPException(status_code=500, detail='Pass a DataFrame with all the PDFs read.')
+    ############################################################################################
 
     if 'FilePageFullText' not in pdfs_in_path.columns:
-        raise Exception('Attention, a column named FilePageFullText is not present.')
+        return HTTPException(status_code=500, detail=f"An error occurred: no 'FilePageFullText' column present.")
 
     try:
 
