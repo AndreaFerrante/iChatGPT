@@ -11,11 +11,11 @@ from backend.utils.utils import is_folder_empty,get_dataframe_pdf_content
 
 
 #######################################################################
-norm_embeds           = ''
-pdfs                  = ''
-UPLOAD_DIR            = './uploads/'
-app                   = FastAPI()
-openAIBot             = OpenAIAssistant(openai_api_key=openai_main_key)
+UPLOAD_DIR        = './uploads/'
+PDFS              = None
+NORM_EMBEDDINGS   = None
+app               = FastAPI()
+openAIBot         = OpenAIAssistant(openai_api_key=openai_main_key)
 #######################################################################
 
 
@@ -73,13 +73,26 @@ async def chat(request: ChatRequest):
         # In the other case, let's implement RAG.
         else:
 
-            #if norm_embeds is None and pdfs is None:
-            if True:
-                pdf_df              = get_dataframe_pdf_content(pdf_path = UPLOAD_DIR, chunck_text=True)
-                pdf_df, norm_embeds = get_pdf_dataframe_embeddings(pdfs_in_path = pdf_df, return_norm_embeddings=True)
-            return ChatResponse(response='hello world')
+            # PDFS                  = get_dataframe_pdf_content(pdf_path = UPLOAD_DIR, chunck_text = True)
+            # PDFS, NORM_EMBEDDINGS = get_pdf_dataframe_embeddings(pdfs_in_path = PDFS, return_norm_embeddings = True)
 
-            D, I  = search_a_query_in_docs_with_faiss(norm_embs = norm_embeds, query = query, dataframe_pdfs = pdf_df, k_closest = 5)
+            PDFS            = pd.read_csv('C:/Users/WKS/Downloads/pdf_df.csv', sep=';')
+            NORM_EMBEDDINGS = np.load('C:/Users/WKS/Downloads/norm_embeds.npy')
+
+            t, p, f  = search_a_query_in_docs_with_faiss(norm_embs      = NORM_EMBEDDINGS,
+                                                         dataframe_pdfs = PDFS,
+                                                         query          = request.query,
+                                                         k_closest      = 10,
+                                                         return_D_I     = False)
+
+            content = 'Answer this question: ' + request.query + '.'      + \
+                      'To answer the question use ONLY and nothing else than this text: ' + t   + \
+                      'Justify your answer based on the text provided. ' + \
+                      'Report orderly the file name and the pages listed here: ' + p + f
+            final    = openAIAssistant.ask_gpt(user_query=content)
+            final    = final.replace('\n',' ')
+
+            return ChatResponse(response=f"{final}")
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")

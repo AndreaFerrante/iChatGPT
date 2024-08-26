@@ -48,7 +48,7 @@ def __normalize_vectors(vectors):
     return vectors / norms
 
 
-def get_pdf_dataframe_embeddings(pdfs_in_path:pd.DataFrame=None, return_norm_embeddings:bool=False):
+def get_pdf_dataframe_embeddings(pdfs_in_path:pd.DataFrame=None, return_norm_embeddings:bool=True):
 
     ############################################################################################
     if pdfs_in_path is None:
@@ -74,10 +74,14 @@ def get_pdf_dataframe_embeddings(pdfs_in_path:pd.DataFrame=None, return_norm_emb
         return pdfs_in_path
 
     except Exception as ex:
-        raise Exception(f'While performing embedding calculation on DataFrame, this error occured: {ex}')
+        return HTTPException(status_code=500, detail=f"While performing embedding calculation on DataFrame, this error occured: {ex}")
 
 
-def search_a_query_in_docs_with_faiss(norm_embs=None, query="", dataframe_pdfs=None, k_closest=None):
+def search_a_query_in_docs_with_faiss(norm_embs:np.array          = None,
+                                      query:str                   = "",
+                                      dataframe_pdfs:pd.DataFrame = None,
+                                      k_closest:int               = None,
+                                      return_D_I:bool             = False):
 
     if query == '':
         raise Exception('Pass a query to embed and search')
@@ -86,7 +90,7 @@ def search_a_query_in_docs_with_faiss(norm_embs=None, query="", dataframe_pdfs=N
         raise Exception('Pass a dataframe of all PDF read and the normalized page embeddings !')
 
     if 'FilePageFullText' not in dataframe_pdfs.columns:
-        raise Exception('Attention, column named FilePageFullText is not in the dataframe of all PDFs scraped ! Pass it.')
+        raise Exception('Attention, column named FilePageFullText is not in the dataframe of all PDFs scraped.')
 
     # 1. Build FAISS index (use Inner Product Similarity to equate CosineSimilarity when vectors are normalized)
     index = faiss.IndexFlatIP(norm_embs.shape[1])
@@ -102,21 +106,23 @@ def search_a_query_in_docs_with_faiss(norm_embs=None, query="", dataframe_pdfs=N
         k_closest = len(dataframe_pdfs)
     D, I = index.search(normalized_query_embedding, k_closest)
 
-    return D, I
-    # 4. Output the sentence that is most similar to the query
-    closest_pages     = list(dataframe_pdfs['FilePageFullText'])[I[0][0]]
-    cosine_similarity = D[0][0]
+    if return_D_I:
+        return D, I
+
+    # 4. Find the text, the pages and the file names where the answer lies more likely ...
+    text_   = [str(x) for x in dataframe_pdfs.iloc[I[0]]['FilePageFullText']]
+    pages_  = [str(x) for x in dataframe_pdfs.iloc[I[0]]['FilePageNumber']]
+    files_  = [str(x) for x in dataframe_pdfs.iloc[I[0]]['FileName']]
+
+    text_   = ' '.join(text_)
+    pages_  = ' '.join(pages_)
+    files_  = ' '.join(files_)
+
     ####################################################################################################################
 
-    print(f"The matrix distance is: {D[0]} \n")
-    print(f"The index is: {I[0]} \n")
-    print(f"The page/pages most similar to the query is: '{closest_pages}' \n")
-    print(f"The cosine similarity for the most similar page is: '{cosine_similarity}'")
-
-    return closest_pages, cosine_similarity
+    return text_, pages_, files_
 
 
-# from iChatGPT.backend.utils.utils import get_dataframe_pdf_content
 # pdf_path            = 'C:/Users/WKS/Downloads/'
 # pdf_df              = pd.read_csv('C:/Users/WKS/Downloads/pdf_df.csv', sep=';')
 # norm_embeds         = np.load('C:/Users/WKS/Downloads/norm_embeds.npy')
@@ -132,7 +138,13 @@ def search_a_query_in_docs_with_faiss(norm_embs=None, query="", dataframe_pdfs=N
 #          "B. Manage assumptions and constraints. " + \
 #          "C. Manage solution scope. " + \
 #          "D. Manage requirements prioritization.")
-# D, I  = search_a_query_in_docs_with_faiss(norm_embs      = norm_embeds,
+# t, p, f = search_a_query_in_docs_with_faiss(norm_embs      = norm_embeds,
 #                                           query          = query,
 #                                           dataframe_pdfs = pdf_df,
-#                                           k_closest      = 5)
+#                                           k_closest      = 10,
+#                                           return_D_I     = False)
+#
+# content = 'Answer this question: ' + query + '. To answer the question use only this text: ' + t
+# final   = openAIAssistant.ask_gpt(user_query=content)
+
+
