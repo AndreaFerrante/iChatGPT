@@ -17,12 +17,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
     <Box
       display="flex"
       flexDirection="column"
-      height="620px"
-      width="820px"
+      height="800px"
+      width="830px"
       overflow="auto"
       border={1}
       padding={0}
-      borderRadius={3}
+      borderRadius={4}
       bgcolor="whitesmoke"
     >
       {messages.map((msg, index) => (

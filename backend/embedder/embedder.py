@@ -122,29 +122,3 @@ def search_a_query_in_docs_with_faiss(norm_embs:np.array          = None,
 
     return text_, pages_, files_
 
-
-# pdf_path            = 'C:/Users/WKS/Downloads/'
-# pdf_df              = pd.read_csv('C:/Users/WKS/Downloads/pdf_df.csv', sep=';')
-# norm_embeds         = np.load('C:/Users/WKS/Downloads/norm_embeds.npy')
-# # pdf_df              = get_dataframe_pdf_content(pdf_path = pdf_path, chunck_text=True)
-# # pdf_df, norm_embeds = get_pdf_dataframe_embeddings(pdfs_in_path=pdf_df, return_norm_embeddings=True)
-#
-#
-# query = "In the middle of a project, a new requirement was added to the scope. The business analyst must determine if" + \
-#         (" any impacts, dependencies, or risks are associated with the addition to the scope. " + \
-#          "What task should the business analyst perform in order to identify these impacts? " + \
-#          "The answer options are: " + \
-#          "A. Manage requirements traceability. " + \
-#          "B. Manage assumptions and constraints. " + \
-#          "C. Manage solution scope. " + \
-#          "D. Manage requirements prioritization.")
-# t, p, f = search_a_query_in_docs_with_faiss(norm_embs      = norm_embeds,
-#                                           query          = query,
-#                                           dataframe_pdfs = pdf_df,
-#                                           k_closest      = 10,
-#                                           return_D_I     = False)
-#
-# content = 'Answer this question: ' + query + '. To answer the question use only this text: ' + t
-# final   = openAIAssistant.ask_gpt(user_query=content)
-
-

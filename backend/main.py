@@ -73,11 +73,8 @@ async def chat(request: ChatRequest):
         # In the other case, let's implement RAG.
         else:
 
-            # PDFS                  = get_dataframe_pdf_content(pdf_path = UPLOAD_DIR, chunck_text = True)
-            # PDFS, NORM_EMBEDDINGS = get_pdf_dataframe_embeddings(pdfs_in_path = PDFS, return_norm_embeddings = True)
-
-            PDFS            = pd.read_csv('C:/Users/WKS/Downloads/pdf_df.csv', sep=';')
-            NORM_EMBEDDINGS = np.load('C:/Users/WKS/Downloads/norm_embeds.npy')
+            PDFS                  = get_dataframe_pdf_content(pdf_path = UPLOAD_DIR, chunck_text = True)
+            PDFS, NORM_EMBEDDINGS = get_pdf_dataframe_embeddings(pdfs_in_path = PDFS, return_norm_embeddings = True)
 
             t, p, f  = search_a_query_in_docs_with_faiss(norm_embs      = NORM_EMBEDDINGS,
                                                          dataframe_pdfs = PDFS,
@@ -86,7 +83,7 @@ async def chat(request: ChatRequest):
                                                          return_D_I     = False)
 
             content = 'Answer this question: ' + request.query + '.'      + \
-                      'To answer the question use ONLY and nothing else than this text: ' + t   + \
+                      'To answer the question use ONLY and nothing else than this text: ' + t + \
                       'Justify your answer based on the text provided. ' + \
                       'Report orderly the file name and the pages listed here: ' + p + f
             final    = openAIAssistant.ask_gpt(user_query=content)
